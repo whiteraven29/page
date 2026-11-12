@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+backend/staticfiles/
+backend/media/
+*.sqlite3
+# Node
+node_modules/
+frontend/dist/
+# Secrets and local config
+.env
+.env.local
+*.pem
+# Editors and OS
+.DS_Store
+.idea/

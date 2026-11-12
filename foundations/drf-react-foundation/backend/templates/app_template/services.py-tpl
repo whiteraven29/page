@@ -1,0 +1,7 @@
+"""Business rules for {{ app_name }}. Views call these; tests can call them directly."""
+
+from .models import {{ camel_case_app_name }}
+
+
+def items_for(user):
+    return {{ camel_case_app_name }}.objects.filter(owner=user)

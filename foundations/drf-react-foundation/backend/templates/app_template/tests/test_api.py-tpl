@@ -1,0 +1,13 @@
+import pytest
+
+pytestmark = pytest.mark.django_db
+URL = "/api/v1/{{ app_name }}/"
+
+
+def test_create_and_list(auth_client):
+    assert auth_client.post(URL, {"name": "First"}, format="json").status_code == 201
+    assert auth_client.get(URL).json()["count"] == 1
+
+
+def test_requires_login(api_client):
+    assert api_client.get(URL).status_code == 401

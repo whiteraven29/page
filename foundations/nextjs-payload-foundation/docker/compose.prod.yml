@@ -1,0 +1,46 @@
+# Production (and staging, with a different project name and .env):
+#   docker compose -f docker/compose.prod.yml --env-file .env up -d
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/OWNER/REPO:latest}
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      NODE_ENV: production
+    volumes:
+      - media:/app/media   # remove once media moves to S3/R2 storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app}"]
+      interval: 5s
+      retries: 10
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

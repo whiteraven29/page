@@ -1,0 +1,21 @@
+from rest_framework import viewsets
+
+from apps.core.permissions import IsOwner
+
+from . import services
+from .models import {{ camel_case_app_name }}
+from .serializers import {{ camel_case_app_name }}Serializer
+
+
+class {{ camel_case_app_name }}ViewSet(viewsets.ModelViewSet):
+    serializer_class = {{ camel_case_app_name }}Serializer
+    permission_classes = [*viewsets.ModelViewSet.permission_classes, IsOwner]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+
+    def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):  # schema generation has no real user
+            return {{ camel_case_app_name }}.objects.none()
+        return services.items_for(self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

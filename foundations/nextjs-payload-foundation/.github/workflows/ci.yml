@@ -1,0 +1,36 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_DB: app, POSTGRES_USER: app, POSTGRES_PASSWORD: app }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U app" --health-interval 5s --health-retries 10
+    env:
+      # Tests run against PostgreSQL in CI, to match production.
+      TEST_DATABASE_URL: postgres://app:app@localhost:5432/app
+      PAYLOAD_SECRET: ci-only-secret
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - name: Types are up to date
+        run: npm run generate:types && git diff --exit-code -- src/payload-types.ts
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Build (no database needed)
+        run: npm run build
+        env: { PAYLOAD_DISABLE_JOBS: "true" }
+      - name: Dependency audit (high and above)
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true

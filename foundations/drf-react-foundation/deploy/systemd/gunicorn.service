@@ -1,0 +1,21 @@
+# /etc/systemd/system/APP_NAME.service   (replace APP_NAME and DEPLOY_USER)
+[Unit]
+Description=APP_NAME gunicorn
+After=network.target
+
+[Service]
+User=DEPLOY_USER
+Group=www-data
+WorkingDirectory=/srv/APP_NAME/backend
+EnvironmentFile=/srv/APP_NAME/backend/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+RuntimeDirectory=APP_NAME
+ExecStart=/srv/APP_NAME/backend/.venv/bin/gunicorn config.wsgi:application \
+    --bind unix:/run/APP_NAME/gunicorn.sock --workers 3 --timeout 30 \
+    --access-logfile - --error-logfile -
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,33 @@
+/* Neutral starter styles. Each project replaces these tokens with its own look. */
+:root {
+  --bg: #f6f7f9; --surface: #fff; --text: #1d2330; --muted: #5f6b7a; --line: #dfe3ea;
+  --accent: #2f6fde; --danger: #c43d3d;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #11151c; --surface: #1a2029; --text: #e6eaf0; --muted: #98a3b3; --line: #2b3340;
+    --accent: #6a9cff; --danger: #ff7a7a; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 var(--font); }
+a { color: var(--accent); }
+h1 { margin: 0; font-size: 1.6rem; }
+.topbar { display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem; border-bottom: 1px solid var(--line); background: var(--surface); }
+.brand { font-weight: 700; text-decoration: none; color: var(--text); }
+.topbar nav { margin-left: auto; }
+.container { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
+.stack { display: flex; flex-direction: column; gap: .9rem; }
+.row { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+label { display: grid; gap: .3rem; font-weight: 500; }
+input, textarea { font: inherit; padding: .5rem .6rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); }
+button { font: inherit; padding: .5rem .9rem; border: 0; border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer; }
+button:disabled { opacity: .6; cursor: progress; }
+button.ghost { background: transparent; color: var(--accent); padding: .25rem .5rem; }
+.muted { color: var(--muted); }
+.error, .field-error { color: var(--danger); }
+.field-error { font-weight: 400; font-size: .9rem; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

@@ -1,0 +1,19 @@
+# HTTPS, compression and security headers in front of the Next.js app.
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		# Next.js inlines small scripts, hence 'unsafe-inline'. Tighten with nonces if a project needs it.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: blob: https:; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self'; frame-src 'self' https://www.google.com https://challenges.cloudflare.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+		-Server
+	}
+
+	# Never cache the admin, the API or preview at the edge.
+	@private path /admin* /api/* /next/*
+	header @private Cache-Control "private, no-store"
+
+	reverse_proxy app:3000
+}
